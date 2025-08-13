@@ -1,0 +1,117 @@
+Perfeito — montei um **passo a passo prático** (sem código) para o **Sistema de Gestão de Serviços Sob Demanda**. Vou organizar em **MVP**, **fases de evolução**, **prioridades técnicas**, **requisitos não-funcionais** e **o que colocar no portfólio**. Segue.
+
+# Visão geral
+
+Objetivo: criar uma plataforma multi-prestador onde profissionais gerenciam serviços, agenda, clientes e pagamentos, e clientes agendam e interagem via app (Flutter) consumindo uma API (FastAPI).
+
+# MVP — o mínimo que precisa funcionar (prioridade alta)
+
+1. **Autenticação de prestador e cliente**
+
+   * Aceitar registro e login (email + senha).
+   * Aceitar login social opcional mais tarde.
+   * Aceitação: usuário consegue se cadastrar, receber token/session e acessar rotas protegidas.
+
+2. **Cadastro de serviços (prestador)**
+
+   * Prestador define serviços com nome, duração, preço.
+   * Aceitação: serviço criado/alterado/listado pelo prestador.
+
+3. **Agenda básica (bloqueio horário + agendamento)**
+
+   * Visualizar disponibilidade, reservar horário, cancelar.
+   * Aceitação: cliente agenda um horário que aparece na agenda do prestador; conflito detectado.
+
+4. **Lista de clientes e histórico de agendamentos**
+
+   * Prestador vê clientes e histórico simples por cliente.
+   * Aceitação: histórico consultável e ligado ao prestador.
+
+5. **Notificações básicas (email ou push simples)**
+
+   * Confirmação de agendamento e lembrete 1 hora antes.
+   * Aceitação: notificações disparadas quando evento ocorre (simulação válida em MVP).
+
+6. **API documentada (OpenAPI/Swagger)**
+
+   * A documentação gerada automaticamente para facilitar integração com Flutter.
+   * Aceitação: rotas acessíveis via Swagger e testáveis manualmente.
+
+# Fase 2 — recursos de alto valor (prioridade média)
+
+1. **Chat entre cliente e prestador** (mensagens simples)
+2. **Integração de pagamento (PIX / gateway)** — checkout e confirmação do pagamento
+3. **Disponibilidade recorrente e janelas de trabalho**
+4. **Política de cancelamento e reembolso (regras)**
+5. **Perfil customizável do prestador (logo, cores, bio)**
+
+# Fase 3 — robustez e multi-tenant (prioridade média/baixa)
+
+1. **Isolamento de dados / multitenancy** (cada prestador com dados separados)
+2. **Painel administrativo (admin SaaS)**
+
+   * Visualizar métricas, suspender prestadores, resolver disputas.
+3. **Relatórios e exportação (PDF/CSV)**
+4. **Filtro avançado/ busca por localização e serviços**
+
+# Fase 4 — escala e produto (prioridade baixa)
+
+1. **Analytics e BI (faturamento, conversão)**
+2. **Marketplace / integração com Google Calendar e pagamento recorrente**
+3. **Internacionalização (i18n)**
+4. **SLA e alta disponibilidade**
+
+# Prioridade de implementação — sequência recomendada
+
+1. Autenticação → 2. CRUD serviços → 3. Agenda (bloqueio + reserva) → 4. Notificações → 5. API docs → 6. UI/UX refinamento do app → 7. Pagamentos → 8. Chat → 9. Admin & relatórios → 10. Multitenancy e escalabilidade.
+
+# Requisitos não-funcionais (essenciais)
+
+* **Segurança:** HTTPS, hashing de senha (bcrypt), JWT com refresh tokens, validação de inputs, proteção contra enumeração de IDs.
+* **Privacidade:** tratar dados pessoais conforme LGPD (criptografar dados sensíveis, política de retenção).
+* **Confiabilidade:** transações atômicas em agendamento/pagamento (evitar double-booking).
+* **Observabilidade:** logs estruturados, métricas básicas (request latency, erros 5xx).
+* **Escalabilidade simples:** arquitetura com Docker, permitir swap por worker async para filas (Celery ou background tasks do FastAPI).
+
+# Tech & infra (sugestão conceitual)
+
+* Backend: FastAPI (ASGI), validação com Pydantic.
+* Banco: PostgreSQL (transações), possivelmente Redis para locks/filas e cache.
+* Filas/background: Redis + RQ/Celery ou background tasks do FastAPI para notificações.
+* Auth: JWT + refresh tokens.
+* Notificações push: Firebase Cloud Messaging (FCM).
+* Pagamento: integração com gateway que ofereça PIX (Gerencianet / Pagar.me / MercadoPago) — escolha conforme disponibilidade/região.
+* Deploy: Docker + CI (GitHub Actions / GitLab CI) → ambiente de staging e produção (Railway / Render / AWS / DigitalOcean).
+* Observability: Sentry para erros, Prometheus/Grafana para métricas (opcional).
+
+# Testes e qualidade
+
+* **Testes unitários** no backend (rotas, validação, regras de negócio).
+* **Testes de integração** para fluxo de agendamento + pagamento.
+* **Testes manuais** documentados (checklist).
+* **Lint & format** (black/isort para Python; análise estática).
+
+# Entregáveis para o portfólio (o que mostrar)
+
+* **README claro** com objetivo, arquitetura, como rodar (docker), e endpoints principais.
+* **Diagrama de arquitetura** (fluxo app → API → DB → notificações).
+* **Diagrama de classes / ER (banco)** simplificado.
+* **Swagger (OpenAPI)** link ou screenshot.
+* **Vídeo/demo curto (1–3 min)** mostrando fluxo: cadastro → agendar → confirmação → agenda do prestador.
+* **Screenshots** do app Flutter (telas principais).
+* **Testes e badges CI** (build passing).
+* **Changelog / backlog** (issues ou milestones) para mostrar evolução.
+
+# Critérios de aceitação (exemplos simples)
+
+* Agendamento: ao tentar reservar um horário já ocupado, o sistema bloqueia e retorna erro amigável.
+* Notificação: após agendar, cliente e prestador recebem confirmação em X minutos (simulação em dev).
+* Pagamento: após pagamento confirmado, agendamento passa de “pendente” para “confirmado”.
+
+# Próximos passos — o que eu posso gerar pra você agora (escolha)
+
+* Backlog com **user stories** priorizadas (PRD leve).
+* Diagrama ER simplificado (entidades: User, Prestador, Serviço, Agendamento, Pagamento).
+* Especificação OpenAPI (endpoints listados, sem código).
+* Wireframes/telas do app (lista de telas e campos).
+  Quer que eu gere algum desses artefatos agora? Qual você prefere primeiro?
