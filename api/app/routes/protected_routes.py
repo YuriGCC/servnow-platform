@@ -1,7 +1,6 @@
 # routes/protected_routes.py
 from fastapi import APIRouter, Depends
 from api.app.routes.deps import get_current_user
-import pkgutil, importlib, app, api
 from api.app.schemas.user import UserRead
 router = APIRouter()
 

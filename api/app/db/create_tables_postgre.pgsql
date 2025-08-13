@@ -1,0 +1,11 @@
+CREATE TABLE "User" (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR UNIQUE NOT NULL,
+    login VARCHAR NOT NULL
+);
+
+CREATE TABLE "Service" (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR UNIQUE NOT NULL,
+    price NUMERIC(10,2)
+);

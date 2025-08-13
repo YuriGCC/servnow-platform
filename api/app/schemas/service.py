@@ -10,4 +10,4 @@ class ServiceRead(BaseModel):
     price: int
 
     class Config:
-        orm_nome = True
+        from_attributes = True
